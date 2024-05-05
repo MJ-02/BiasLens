@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BiasLens - Filter News by Bias</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f4f4f4;
+        }
+        header {
+            background-color: #fff;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+        .logo-container img {
+            height: 80px;
+        }
+        .logo-text {
+            font-size: 24px;
+            margin-left: 10px;
+            font-family: 'Bodoni MT Black', sans-serif;
+        }
+        .search-and-filter, .login-form-container {
+            display: flex;
+            align-items: center;
+        }
+        .login-form-container {
+            display: none; /* Hide login form initially */
+        }
+        input[type="search"], input[type="email"], input[type="password"], .filter-button select {
+            padding: 5px;
+            margin-right: 10px;
+        }
+        button.sign-in, button[type="submit"] {
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        .news-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+        article {
+            width: 30%;
+            background-color: #ffffff;
+            margin: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            border-radius: 5px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+        }
+        article img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        article h2, article p {
+            margin: 10px;
+        }
+        article:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+        }
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 20px;
+            width: 100%;
+        }
+        footer a {
+            color: #4ea1d3;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo-container">
+        <a href="frontend.html">
+        <img src="https://media.istockphoto.com/id/1333547631/vector/round-logo-lens-sign-vector-sketch-lens-tattoo.jpg?s=612x612&w=0&k=20&c=ezgCYSBiZ5pOh-0vLBK1tsu7aLxuHb3tH97uDmUXS5Q=" alt="BiasLens Logo">
+    </a>
+        <span class="logo-text">BiasLens</span>
+    </div>
+    <div class="search-and-filter">
+        <input type="search" id="searchInput" placeholder="Search articles..." onkeypress="handleKeyPress(event)">
+        <div class="filter-button">
+            <select id="biasScore">
+                <option value="all">All</option>
+                <option value="balanced">Balanced</option>
+                <option value="left">Left-Biased</option>
+                <option value="right">Right-Biased</option>
+            </select>
+        </div>
+        <button class="sign-in" onclick="toggleLoginForm()">Sign in</button>
+    </div>
+    <div class="login-form-container" id="login-form-container">
+        <form id="login-form" action="frontend.html">
+            <input type="email" id="email" name="email" placeholder="Email">
+            <input type="password" id="password" name="password" placeholder="Password">
+            <button type="submit">Login</button>
+        </form>
+    </div>
+</header>
+
+<main>
+    <div class="news-grid" id="news-articles">
+        <!-- Articles will be populated by JavaScript -->
+    </div>
+</main>
+
+<footer>
+    <p>Contact us at <a href="mailto:info@biaslens.com">info@biaslens.com</a></p>
+    <p>© 2024 BiasLens. All rights reserved.</p>
+</footer>
+
+<script>
+const articlesData = [];
+
+async function fetchNewsArticles() {
+  try {
+    const response = await fetch('http://localhost:5000/get_news');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    articlesData.push(...data.articles);
+    populateArticles(articlesData);
+  } catch (error) {
+    console.error("Could not fetch articles:", error);
+  }
+}
+
+console.log(articlesData)
+
+function populateArticles(articles) {
+  const container = document.getElementById('news-articles');
+  container.innerHTML = '';
+
+  articles.forEach(article => {
+    const articleElement = document.createElement('article');
+    // Include the description within the article box
+    articleElement.innerHTML = `
+      <img src="${article.image_url || 'https://via.placeholder.com/150'}" alt="Article Image">
+      <h2>${article.title}</h2>
+      <p><strong></strong> ${article.description || 'No description available'}</p>
+      <p><strong>Bias:</strong> ${article.bias} | <strong>Date Published:</strong> ${article.pubDate || 'N/A'} | <strong>Source:</strong> ${article.source_id || 'N/A'}</p>
+    `;
+    container.appendChild(articleElement);
+
+    articleElement.addEventListener('click', () => {
+      window.open(`article.html?title=${encodeURIComponent(article.title)}&image_url=${encodeURIComponent(article.image_url)}&source_id=${encodeURIComponent(article.source_id)}&pubDate=${encodeURIComponent(article.pubDate)}&bias=${encodeURIComponent(article.bias)}&content=${encodeURIComponent(article.content)}&link=${encodeURIComponent(article.link)}&description=${encodeURIComponent(article.description)}`, '_blank');
+    });
+  });
+}
+
+function searchArticles() {
+  const searchValue = document.getElementById('searchInput').value.toLowerCase();
+  const filteredArticles = articlesData.filter(article => {
+    const title = article.title ? article.title.toLowerCase().includes(searchValue) : false;
+    const description = article.description ? article.description.toLowerCase().includes(searchValue) : false;
+    return title || description;
+  });
+  populateArticles(filteredArticles);
+}
+
+function handleKeyPress(event) {
+  if (event.key === "Enter") {
+    searchArticles();
+  }
+}
+
+function toggleLoginForm() {
+    const formContainer = document.getElementById('login-form-container');
+    formContainer.style.display = formContainer.style.display === 'flex' ? 'none' : 'flex';
+}
+
+document.getElementById('biasScore').addEventListener('change', function() {
+  searchArticles();
+});
+
+document.addEventListener('DOMContentLoaded', fetchNewsArticles);
+</script>
+
+</body>
+</html>

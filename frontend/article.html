@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Article Details</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+    header {
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      padding: 20px 0;
+    }
+    main {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .article-container {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      max-width: 800px;
+      width: 100%;
+    }
+    .article-image {
+      width: 100%;
+      border-radius: 5px;
+    }
+    .article-meta {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+      font-size: 14px;
+      color: #666;
+    }
+    .article-title {
+      color: #333;
+      margin: 20px 0 10px;
+    }
+    .article-content {
+      text-align: justify;
+      line-height: 1.6;
+    }
+    footer {
+      background-color: #333;
+      color: white;
+      text-align: center;
+      padding: 20px 0;
+      margin-top: 20px;
+      width: 100%;
+    }
+    .back-link {
+      display: inline-block;
+      margin-top: 20px;
+      color: #333;
+      text-decoration: none;
+      background-color: #f4f4f4;
+      padding: 10px 15px;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+
+
+  <main>
+    <div id="article-details" class="article-container">
+      <!-- Article details will be populated dynamically using JavaScript -->
+    </div>
+  </main>
+
+  <footer>
+    <p>Contact us at <a href="mailto:info@biaslens.com" style="color: #4ea1d3; text-decoration: none;">info@biaslens.com</a></p>
+    <p>© 2024 BiasLens. All rights reserved.</p>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const articleTitle = urlParams.get('title') || 'Title not available';
+  const articleImage = urlParams.get('image_url') || 'https://via.placeholder.com/150'; // Fallback placeholder image
+  const articleDate = urlParams.get('pubDate') || 'Date not provided';
+  const articleURL = urlParams.get('link') || '#';
+  const articleSource = urlParams.get('source_id') || 'Unknown source';
+  const articleBias = urlParams.get('bias') || 'Bias not available';
+  let articleContent = urlParams.get('content') || 'Content not available';
+
+  articleContent = articleContent.replace(/Loading\.\.\. Loading\.\.\./g, '');
+
+  const articleDetailsDiv = document.getElementById('article-details');
+  articleDetailsDiv.innerHTML = `
+    <img src="${articleImage}" alt="Article Image" class="article-image">
+    <div class="article-meta">
+      <span>Published: ${articleDate}</span>
+      <span>Source: ${articleSource}</span>
+      <span>Bias: ${articleBias}</span>
+    </div>
+    <h2 class="article-title">${articleTitle}</h2>
+    <p class="article-content">${articleContent}</p>
+  `;
+});
+  </script>
+</body>
+</html>
