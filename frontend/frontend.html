@@ -136,11 +136,13 @@ const articlesData = [];
 
 async function fetchNewsArticles() {
   try {
-    const response = await fetch('http://localhost:5000/get_news');
+    const response =  await fetch('http://127.0.0.1:8080',{method:"GET"});
     if (!response.ok) {
+        console.log(response)
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const data = await response.json();
+    const data =  await response.json();
+    console.log(data)
     articlesData.push(...data.articles);
     populateArticles(articlesData);
   } catch (error) {
@@ -158,7 +160,7 @@ function populateArticles(articles) {
     const articleElement = document.createElement('article');
     // Include the description within the article box
     articleElement.innerHTML = `
-      <img src="${article.image_url || 'https://via.placeholder.com/150'}" alt="Article Image">
+      <img src="${article.image_url || 'C:/Users/majal/Desktop/GP2/Bias-lensGP2/frontend/placeholder.webp'}" alt="Article Image">
       <h2>${article.title}</h2>
       <p><strong></strong> ${article.description || 'No description available'}</p>
       <p><strong>Bias:</strong> ${article.bias} | <strong>Date Published:</strong> ${article.pubDate || 'N/A'} | <strong>Source:</strong> ${article.source_id || 'N/A'}</p>
