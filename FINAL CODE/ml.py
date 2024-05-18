@@ -50,13 +50,15 @@ def get_embeddings(ttl_path, entities):
 def main():
     entities, labels = read_data()
     embeddings = get_embeddings(f"{DATA_DIR}bias_lens_graph.ttl",entities)
-    new_articles = embeddings[0][-50:]
+    fetched_articles= pd.read_csv("bias_lens_data/Fetched_Data_unlabeled.csv")
+    new_len = len(fetched_articles)
+    new_articles = embeddings[0][-new_len:]
 
-    train_size = int(len(embeddings[0][:-50])*0.8)
+    train_size = int(len(embeddings[0][:-new_len])*0.8)
     train_embeddings = embeddings[0][:train_size]
     train_labels = labels[:train_size]
-    test_embeddings = embeddings[0][train_size:-50]
-    test_labels = labels[train_size:-50]
+    test_embeddings = embeddings[0][train_size:-new_len]
+    test_labels = labels[train_size:-new_len]
 
 
     clf = SVC(random_state = RANDOM_STATE)
@@ -73,9 +75,9 @@ def main():
     
     ### Generate the labels for new articles
     new_labels = clf.predict(new_articles)
-    fetched_articles = pd.read_csv("C:/Users/majal/Desktop/New dataset news/Article-Bias-Prediction/Fetched_Data_unlabeled.csv")
+    fetched_articles = pd.read_csv("bias_lens_data/Fetched_Data_unlabeled.csv")
     fetched_articles["bias"] = new_labels
-    fetched_articles.to_csv("Fetched_Articles_labeled.csv")
+    fetched_articles.to_csv("bias_lens_data/Fetched_Articles_labeled.csv")
     print(new_labels)
 
 

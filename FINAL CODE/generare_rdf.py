@@ -63,9 +63,12 @@ def fetch_news() -> pd.DataFrame:
     ## Unlabeled news will have a bias of 99
     df_fetched["bias"] = 99
     df_fetched["creator"] = df_fetched["creator"].apply(lambda x:clean_author_names(x))
-    df_fetched["content"] = df_fetched["content"].apply(lambda x: clean_body_text(x))
+    # df_fetched["content"] = df_fetched["content"].apply(lambda x: clean_body_text(x))
     df_fetched["source_id"] = df_fetched["source_id"].apply(lambda x: clean_outlet_names(x))
-    df_fetched.to_csv("Fetched_Data_unlabeled.csv")
+
+    #remove repeated articles, subset with title since they may have different article IDs which will not be recognized as duplicated otherwise
+    df_fetched = df_fetched.drop_duplicates(subset='title', keep='first')
+    df_fetched.to_csv(f"{DATA_DIR}Fetched_Data_unlabeled.csv")
     return df_fetched
 
 
@@ -104,27 +107,25 @@ def generate_graph(df_final:pd.DataFrame, file_name:str, write_turtle = False):
     print("Begin Serialization")
     turtle_output = g.serialize(format="turtle")
     print("End Serialization")
-    if write_turtle:
-        if not os.path.exists(DATA_DIR):
-            os.makedirs(DATA_DIR)
-        with open(f"{DATA_DIR}{file_name}.ttl", "w", encoding="utf-8") as file:
-            file.write(turtle_output)
-        df_ontology = pd.DataFrame.from_dict(dict1, orient='index')
-        df_ontology.to_csv(f"{DATA_DIR}URI_label_pairs.tsv", sep='\t')
+    
+    with open(f"{DATA_DIR}{file_name}.ttl", "w", encoding="utf-8") as file:
+        file.write(turtle_output)
+    df_ontology = pd.DataFrame.from_dict(dict1, orient='index')
+    df_ontology.to_csv(f"{DATA_DIR}URI_label_pairs.tsv", sep='\t')
     
 def main():
-    df = pd.read_csv("FINAL CODE/bias_lens_data/Allsides_bias_dataset.csv")
+    df = pd.read_csv("bias_lens_data/Allsides_bias_dataset.csv")
     df["image_url"] = "None"
     df["author_names"] = df["authors"].apply(lambda x:str(x).split(","))
     df["author_names"] = df["author_names"].apply(lambda x:clean_author_names(x))
     
     df = df.rename(columns={"Unnamed: 0":"article_id","url":"link", "source":"source_id", "author_names":"creator"})
-    df["content"] = df["content"].apply(lambda x: clean_body_text(x))
+    # df["content"] = df["content"].apply(lambda x: clean_body_text(x))
     df["source_id"] = df["source_id"].apply(lambda x: clean_outlet_names(x))
     fetched_news = fetch_news()
-    # df_final = pd.concat([df[["article_id", "title", "link", "source_id", "image_url", "content", "creator",'bias']], 
-    #                       fetched_news[["article_id", "title", "link", "source_id", "image_url", "content", "creator",'bias']]], 
-    #                       axis = 0)
+    df_final = pd.concat([df[["article_id", "title", "link", "source_id", "image_url", "content", "creator",'bias']], 
+                          fetched_news[["article_id", "title", "link", "source_id", "image_url", "content", "creator",'bias']]], 
+                          axis = 0)
     df_final = df.copy()
     generate_graph(df_final, file_name="bias_lens_graph", write_turtle=True)
 
