@@ -102,7 +102,7 @@
     <div class="search-and-filter">
         <input type="search" id="searchInput" placeholder="Search articles..." onkeypress="handleKeyPress(event)">
         <div class="filter-button">
-            <select id="biasScore">
+            <select id="biasScore" title="biasScore">
                 <option value="all">All</option>
                 <option value="balanced">Balanced</option>
                 <option value="left">Left-Biased</option>
@@ -162,8 +162,7 @@ function populateArticles(articles) {
     articleElement.innerHTML = `
       <img src="${article.image_url || 'C:/Users/majal/Desktop/GP2/Bias-lensGP2/frontend/placeholder.webp'}" alt="Article Image">
       <h2>${article.title}</h2>
-      <p><strong></strong> ${article.description || 'No description available'}</p>
-      <p><strong>Bias:</strong> ${article.bias} | <strong>Date Published:</strong> ${article.pubDate || 'N/A'} | <strong>Source:</strong> ${article.source_id || 'N/A'}</p>
+      <p><strong>Bias:</strong> ${article.bias}  | <strong>Source:</strong> ${article.source_id || 'N/A'}</p>
     `;
     container.appendChild(articleElement);
 

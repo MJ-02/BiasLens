@@ -89,7 +89,7 @@
   const urlParams = new URLSearchParams(window.location.search);
   const articleTitle = urlParams.get('title') || 'Title not available';
   const articleImage = urlParams.get('image_url') || 'https://via.placeholder.com/150'; // Fallback placeholder image
-  const articleDate = urlParams.get('pubDate') || 'Date not provided';
+  // const articleDate = urlParams.get('pubDate') || 'Date not provided';
   const articleURL = urlParams.get('link') || '#';
   const articleSource = urlParams.get('source_id') || 'Unknown source';
   const articleBias = urlParams.get('bias') || 'Bias not available';
@@ -101,7 +101,6 @@
   articleDetailsDiv.innerHTML = `
     <img src="${articleImage}" alt="Article Image" class="article-image">
     <div class="article-meta">
-      <span>Published: ${articleDate}</span>
       <span>Source: ${articleSource}</span>
       <span>Bias: ${articleBias}</span>
     </div>
