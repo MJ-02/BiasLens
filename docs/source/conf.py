@@ -2,9 +2,9 @@
 
 # -- Project information
 
-project = 'Lumache'
-copyright = '2021, Graziella'
-author = 'Graziella'
+project = 'BiasLens'
+copyright = '2024, Majali et. al'
+author = 'Abdullah Majali'
 
 release = '0.1'
 version = '0.1.0'
