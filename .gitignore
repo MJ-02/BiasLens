@@ -11,3 +11,5 @@ deprecated/
 .hintrc
 FINAL CODE/bias_lens_data/
 bias_lens_data/
+__pycache__/
+.env
