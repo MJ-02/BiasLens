@@ -9,7 +9,18 @@ from rdflib import Graph, Literal, Namespace, RDF, XSD
 
 
 os.environ["NEWS_API_KEY"] = os.getenv("NEWS_API_KEY")
+
+
 def clean_author_names(names):
+    """
+    Cleans the author names provided by both the news API and in the dataset. Will split authors into a list. Will also handle missing names
+
+    :param names: The author names to be cleaned
+    :type names: str
+
+    :return: list of cleaned author names
+    :rtype: list
+    """
     if names == None:
         return ["anonymous"]
     pattern = r"[#.<>\]\[\\]"
@@ -27,6 +38,15 @@ def clean_author_names(names):
     return cleaned_names
 
 def clean_body_text(text:str) -> str:
+    """ 
+    Cleans the article body text by removing special characters and converting to lower case. 
+
+    :param text: the article body text
+    :type text: str
+
+    :return: cleaned article text
+    :rtype: str
+    """
     text = re.sub(r'\W', ' ', str(text))
     text = re.sub(r'\s+[a-zA-Z]\s+', ' ', text)
     text = re.sub(r'\^[a-zA-Z]\s+', ' ', text)
@@ -36,6 +56,14 @@ def clean_body_text(text:str) -> str:
     return text
 
 def clean_outlet_names(name:str) -> str:
+    """
+    Cleans the outlet names provided by both the news API and in the dataset by removing special characters and converting to lower case.
+    :param name: The outlet name to be cleaned
+    :type name: str
+
+    :return: cleaned outlet name
+    :rtype: str
+    """
     pattern = r"[()\[\]\!<>-]|CDATA|\.com|(online news)"
     name = name.lower()
     name = re.sub(pattern, "", name)
@@ -45,6 +73,16 @@ def clean_outlet_names(name:str) -> str:
 
 
 def fetch_news(save_path) -> pd.DataFrame:
+    """
+    Executes a GET request to fetch daily news articles that must be served to the user. You will need to provide your own API from newsdata.io
+
+    :param save_path: directory to save the feteched articles
+    :type save_path: str
+
+    :return: DataFrame of fetched articles
+    :rtype: pd.DataFrame
+    """
+    
     URL:str = f"https://newsdata.io/api/1/news?apikey={os.environ['NEWS_API_KEY']}&country=us&language=en&full_content=1&size=50&category=politics"
     try:
         r = requests.get(URL)
@@ -70,6 +108,15 @@ def fetch_news(save_path) -> pd.DataFrame:
 
 
 def generate_graph(df_final:pd.DataFrame, file_name:str, save_path:str,  write_turtle = False):
+    """
+    Takes in a dataframe of articles and generates the KG according to our ontology definition. 
+    :param df_final: articles dataframe
+    :type df_final: pd.DataFrame
+    :type save_path: str
+
+    :return: DataFrame of fetched articles
+    :rtype: pd.DataFrame
+    """
     g = Graph()
     ns = Namespace("http://biaslens.com/")
     RDFS= Namespace("http://www.w3.org/2000/01/rdf-schema#")
@@ -110,6 +157,12 @@ def generate_graph(df_final:pd.DataFrame, file_name:str, save_path:str,  write_t
     df_ontology.to_csv(f"{save_path}URI_label_pairs.tsv", sep='\t')
     
 def GenerateRDF(path):
+     """
+    The drived function of this script, it will call the other functions to clean and fetch new articles, concatnate them into a bigger DF and generate the KG 
+    
+    :param path: directory to save to 
+    :type path: str
+    """
     df = pd.read_csv(f"{path}Allsides_bias_dataset.csv")
     df["image_url"] = "None"
     df["author_names"] = df["authors"].apply(lambda x:str(x).split(","))
