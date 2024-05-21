@@ -1,5 +1,5 @@
 ml
 =======
 
-.. automodule:: main
+.. automodule:: ml
     :members:
