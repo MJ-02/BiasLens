@@ -22,6 +22,12 @@ DATA_PATH = 'bias_lens_data/'
 
 @app.get('/')
 def get_news():
+    """
+    get_news() will be called when a GET request is recieved by the frontend
+    Recieves no params 
+
+    :return: JSON Response Object with with a list of articles and their bias labels
+    """
     df = pd.read_csv(f"{DATA_PATH}Fetched_Articles_labeled.csv")
     # df.to_json("json_file.json", orient="records", lines=True)
     df["image_url"] = df["image_url"].fillna("C:/Users/majal/Desktop/GP2/Bias-lensGP2/frontend/placeholder.webp")
