@@ -1,7 +1,7 @@
-main
+driver
 ====
 
-.. automodule:: main
+.. automodule:: driver
   :members:
   :undoc-members:
   :show-inheritance:
