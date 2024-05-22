@@ -34,7 +34,7 @@ def get_embeddings(ttl_path, entities):
     the embeddings by using the pyRDF2Vec package
 
     :param ttl_path: the directory of the turtle file .ttl
-    :type ttl_path:str
+    :type ttl_path: str
 
     :param entities: list of URIs that we wish to create embeddings for
     :type entities: list[str]
