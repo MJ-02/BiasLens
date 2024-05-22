@@ -4,7 +4,7 @@ import pandas as pd
 import json
 from flask import jsonify
 # Our scripts
-import generate_rdf
+import generateRDF
 import ml
 
 
@@ -42,6 +42,6 @@ def get_news():
 
 
 if __name__ == "__main__":
-    generare_rdf.GenerateRDF(DATA_PATH)
+    generateRDF.GenerateRDF(DATA_PATH)
     ml.FitAndPredict(DATA_PATH)
     app.run(port = 8080, debug=True)
