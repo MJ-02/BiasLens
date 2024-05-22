@@ -80,7 +80,7 @@ def fetch_news(save_path) -> pd.DataFrame:
     :type save_path: str
 
     :return: DataFrame of fetched articles
-    :rtype: pd.DataFrame
+    :rtype: pandas.DataFrame
     """
     
     URL:str = f"https://newsdata.io/api/1/news?apikey={os.environ['NEWS_API_KEY']}&country=us&language=en&full_content=1&size=50&category=politics"
@@ -115,7 +115,7 @@ def generate_graph(df_final:pd.DataFrame, file_name:str, save_path:str,  write_t
     :type save_path: str
 
     :return: DataFrame of fetched articles
-    :rtype: pd.DataFrame
+    :rtype: pandas.DataFrame
     """
     g = Graph()
     ns = Namespace("http://biaslens.com/")
