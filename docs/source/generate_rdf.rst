@@ -1,5 +1,5 @@
 generate_rdf
 ============
 
-.. automodule:: generate_rdf
+.. automodule:: generateRDF
     :members:
