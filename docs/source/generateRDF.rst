@@ -1,4 +1,4 @@
-generate_rdf
+generateRDF
 ============
 
 .. automodule:: generateRDF
