@@ -8,7 +8,7 @@ import re
 from rdflib import Graph, Literal, Namespace, RDF, XSD
 
 
-os.environ["NEWS_API_KEY"] = os.getenv("NEWS_API_KEY")
+# os.environ["NEWS_API_KEY"] = os.getenv("NEWS_API_KEY")
 
 
 def clean_author_names(names):
