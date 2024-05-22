@@ -157,7 +157,7 @@ def generate_graph(df_final:pd.DataFrame, file_name:str, save_path:str,  write_t
     df_ontology.to_csv(f"{save_path}URI_label_pairs.tsv", sep='\t')
     
 def GenerateRDF(path):
-     """
+    """
     The drived function of this script, it will call the other functions to clean and fetch new articles, concatnate them into a bigger DF and generate the KG 
     
     :param path: directory to save to 
