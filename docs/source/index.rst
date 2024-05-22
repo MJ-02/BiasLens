@@ -15,6 +15,7 @@ Contents
    :maxdepth: 2
    :caption: Contents:
 
+   usage
    generate_rdf
    ml
    main
