@@ -16,6 +16,6 @@ Contents
    :caption: Contents:
 
    usage
-   generate_rdf
+   generateRDF
    ml
-   main
+   driver
