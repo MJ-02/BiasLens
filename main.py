@@ -4,7 +4,7 @@ import pandas as pd
 import json
 from flask import jsonify
 # Our scripts
-import generare_rdf
+import generate_rdf
 import ml
 
 
