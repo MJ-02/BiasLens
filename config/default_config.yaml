@@ -1,0 +1,45 @@
+# BiasLens Configuration
+
+# OpenAI settings
+openai:
+  model_name: "gpt-4"
+  temperature: 0.7
+  max_tokens: 1000
+
+# News API settings
+news_api:
+  country: "us"
+  language: "en"
+  max_articles: 50
+
+# Embedding model settings
+embeddings:
+  model_name: "all-MiniLM-L6-v2"
+  cache_dir: "./.cache/embeddings"
+
+# Graph processing settings
+graph:
+  # Minimum similarity score to create relationships between articles
+  similarity_threshold: 0.7
+  # Maximum number of relationships per article
+  max_relationships: 10
+  # Number of days to look back/forward for temporal context
+  temporal_window_days: 7
+
+# Bias analysis settings
+analysis:
+  # Minimum confidence score required for bias assessment
+  min_confidence: 0.7
+  # Number of similar articles to include in context
+  context_window: 5
+  # Maximum number of graph hops for context retrieval
+  max_hops: 2
+
+# Neo4j database settings (override with environment variables)
+# NEO4J_URI=bolt://localhost:7687
+# NEO4J_USERNAME=neo4j
+# NEO4J_PASSWORD=password
+
+# API keys (must be set in environment variables)
+# OPENAI_API_KEY=your-openai-api-key
+# NEWS_API_KEY=your-news-api-key
