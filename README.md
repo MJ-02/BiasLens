@@ -1,128 +1,133 @@
-# BiasLens: Enhanced News Bias Analysis
+# BiasLens: Advanced News Analysis Platform
 
-BiasLens is an advanced system for analyzing bias in news articles using graph-based Retrieval Augmented Generation (GraphRAG). The system combines knowledge graph technology with large language models to provide comprehensive and contextual bias analysis.
+BiasLens is a sophisticated platform that combines graph-based analysis with AI to help users understand media bias in news articles. Using GraphRAG (Graph-based Retrieval Augmented Generation) technology, it provides contextual analysis of news articles while visualizing relationships between articles, authors, sources, and topics.
 
 ## Features
 
-- **Graph-Based Analysis**: Uses Neo4j to create and traverse relationships between articles
-- **Contextual Bias Detection**: Considers multiple sources and historical patterns
-- **Temporal Analysis**: Tracks bias evolution over time
-- **Source Pattern Recognition**: Identifies consistent bias patterns in news sources
-- **Real-Time Processing**: Fetches and analyzes current news articles
-- **Comprehensive API**: Flexible interface for various analysis needs
+- **Real-Time News Analysis**: Stay updated with the latest news while understanding potential biases through our advanced analysis system
+- **Interactive Visualizations**: Explore relationships between articles, authors, sources, and topics through dynamic graph visualizations
+- **Contextual Analysis**: Understand articles in the context of related content and historical patterns
+- **Source Bias Tracking**: Monitor and analyze bias patterns across different news sources over time
+- **Topic-Based Insights**: Explore how different sources cover the same topics
+- **GraphRAG Technology**: Leverage graph-based retrieval for more nuanced and contextual bias analysis
 
 ## Architecture
 
-BiasLens uses a sophisticated architecture combining several key components:
+BiasLens uses a modern, containerized architecture:
 
-1. **Knowledge Graph (Neo4j)**
-   - Stores articles and their relationships
-   - Enables semantic similarity connections
-   - Supports temporal and source-based analysis
+- **Frontend**: React-based web application with Material-UI and D3.js visualizations
+- **Backend**: FastAPI server with GraphRAG implementation
+- **Database**: Neo4j graph database for storing and querying article relationships
+- **AI Integration**: OpenAI GPT-4 for advanced text analysis
+- **Embeddings**: Sentence transformers for semantic similarity analysis
 
-2. **GraphRAG Engine**
-   - Retrieves relevant context from the knowledge graph
-   - Uses GPT-4 for analysis
-   - Provides explainable bias assessments
+## Prerequisites
 
-3. **Embedding System**
-   - Generates semantic embeddings for articles
-   - Enables similarity-based retrieval
-   - Supports multiple embedding models
+- Docker and Docker Compose
+- Node.js 18+ (for local development)
+- Python 3.9+ (for local development)
+- Neo4j 4.4+
+- OpenAI API key
+- News API key (from newsdata.io)
 
-## Setup
+## Quick Start
 
-1. **Install Dependencies**
+1. Clone the repository:
 ```bash
+git clone https://github.com/yourusername/biaslens.git
+cd biaslens
+```
+
+2. Set up environment variables:
+```bash
+cp .env.example .env
+# Edit .env with your configuration
+```
+
+3. Run the setup script:
+```bash
+chmod +x setup.sh
+./setup.sh start
+```
+
+4. Access the platform:
+- Frontend: http://localhost:3000
+- API Documentation: http://localhost:5000/docs
+- Neo4j Browser: http://localhost:7474
+
+## Development Setup
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm start
+```
+
+### Backend
+
+```bash
+python -m venv venv
+source venv/bin/activate  # or `venv\Scripts\activate` on Windows
 pip install -r requirements.txt
+uvicorn src.api.server:app --reload
 ```
 
-2. **Install Neo4j**
-- Download and install [Neo4j](https://neo4j.com/download/)
-- Create a new database
-- Note down the connection details
+### Running Tests
 
-3. **Configuration**
-- Copy `config/default_config.yaml` to `config/config.yaml`
-- Update the configuration with your settings
-- Set up environment variables:
-  ```bash
-  NEO4J_URI=bolt://localhost:7687
-  NEO4J_USERNAME=neo4j
-  NEO4J_PASSWORD=your-password
-  OPENAI_API_KEY=your-openai-key
-  NEWS_API_KEY=your-newsdata-key
-  ```
-
-## Usage
-
-1. **Process Historical Dataset**
 ```bash
-python -m src.driver --config config/config.yaml --dataset path/to/dataset.csv
+pytest tests/
 ```
 
-2. **Fetch Current News**
+## Docker Deployment
+
+The platform is containerized using Docker for easy deployment:
+
 ```bash
-python -m src.driver --config config/config.yaml --fetch
+# Build and start all services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
 ```
 
-3. **Analyze Source Bias**
-```bash
-python -m src.driver --config config/config.yaml --analyze-source "source-name" --days 30
-```
+## API Documentation
 
-## Python API
+The backend API provides comprehensive endpoints for:
 
-```python
-from src.driver import BiasLens
+- Article retrieval and analysis
+- Graph data access
+- Bias analysis
+- Topic and source statistics
 
-# Initialize
-biaslens = BiasLens("config/config.yaml")
+Full API documentation is available at `http://localhost:5000/docs` when running the server.
 
-# Analyze an article
-analysis = biaslens.analyze_article(
-    article_content="Article text here",
-    source="News Source Name",
-    date="2024-02-12"
-)
+## Graph Visualization
 
-# Get similar articles
-similar = biaslens.get_similar_articles(
-    article_content="Article text here",
-    limit=5
-)
+BiasLens provides two types of graph visualizations:
 
-# Analyze source patterns
-source_analysis = biaslens.analyze_source(
-    source="News Source Name",
-    days=30
-)
+1. **Article Context Graph**: Shows relationships between a specific article and related entities
+2. **Global Knowledge Graph**: Visualizes the entire network of articles, authors, sources, and topics
 
-# Clean up
-biaslens.close()
-```
+### Graph Features:
+- Interactive navigation
+- Node filtering
+- Relationship exploration
+- Temporal analysis
+- Bias pattern visualization
 
-## Output Format
+## Configuration
 
-The system provides detailed analysis results:
+Key configuration files:
 
-```python
-{
-    "bias_score": 0.25,  # Range: -1 (left) to 1 (right)
-    "confidence": 0.85,  # Range: 0 to 1
-    "analysis": "Detailed analysis text...",
-    "indicators": [
-        "Use of emotional language",
-        "Source selection bias",
-        # ...
-    ],
-    "context_used": {
-        "cross_source_articles": 5,
-        "source_articles": 3,
-        "temporal_articles": 10
-    }
-}
-```
+- `config/default_config.yaml`: Default configuration settings
+- `.env`: Environment variables
+- `docker-compose.yml`: Container orchestration
+- `frontend/nginx.conf`: Frontend server configuration
 
 ## Contributing
 
@@ -132,11 +137,42 @@ The system provides detailed analysis results:
 4. Run tests
 5. Submit a pull request
 
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and development process.
+
+## Monitoring
+
+The platform includes monitoring endpoints:
+
+- Health checks: `http://localhost:5000/health`
+- Metrics: `http://localhost:9090` (when enabled)
+- Neo4j metrics: Available through the Neo4j Browser
+
+## Troubleshooting
+
+Common issues and solutions:
+
+1. **Neo4j Connection Issues**:
+   - Verify Neo4j is running: `docker-compose ps`
+   - Check credentials in `.env`
+   - Ensure ports are not in use
+
+2. **API Key Issues**:
+   - Verify API keys in `.env`
+   - Check API rate limits
+   - Ensure proper key permissions
+
+3. **Performance Issues**:
+   - Check Neo4j memory settings
+   - Verify cache configuration
+   - Monitor system resources
+
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
 - Original dataset from [Article Bias Prediction](https://github.com/ramybaly/Article-Bias-Prediction)
-- Based on research paper: [Article Bias Detection Using Graph Neural Networks](https://arxiv.org/abs/2010.05338)
+- Research paper: [Article Bias Detection Using Graph Neural Networks](https://arxiv.org/abs/2010.05338)
+- Neo4j team for graph database technology
+- OpenAI for GPT-4 API
