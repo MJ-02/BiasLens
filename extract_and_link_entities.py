@@ -1,8 +1,7 @@
 import json
 import os
 from collections import defaultdict
-import torch
-from transformers import AutoTokenizer, AutoModelForTokenClassification
+from gliner import GLiNER
 from tqdm import tqdm
 import pickle
 from entity_linking import EntityLinker
@@ -26,86 +25,49 @@ def load_articles(data_path, batch_size=100):
         
         yield batch_articles
 
-def extract_entities(text, tokenizer, model):
+# Initialize GLiNER model globally
+model = GLiNER.from_pretrained("EmergentMethods/gliner_medium_news-v2.1")
+
+def extract_entities(text):
     """Extract entities using GLINER"""
-    entities = defaultdict(list)  # Changed to list to preserve order and context
+    entities = defaultdict(list)
     
-    # Process text in chunks of max 512 tokens to handle long texts
-    max_length = 512
-    words = text.split()
-    chunks = [' '.join(words[i:i + max_length]) for i in range(0, len(words), max_length)]
+    # Get context window size
+    context_size = 100
     
-    for chunk in chunks:
-        inputs = tokenizer(chunk, return_tensors="pt", truncation=True, max_length=512)
+    # Process the text with GLiNER
+    results = model.predict(text)
+    
+    # Process each entity mention
+    for entity in results:
+        entity_text = entity['entity']
+        entity_type = entity['type']
+        start_idx = entity['start']
+        end_idx = entity['end']
         
-        with torch.no_grad():
-            outputs = model(**inputs)
-            predictions = outputs.logits.argmax(-1)
+        # Map GLiNER types to our schema
+        type_mapping = {
+            'PERSON': 'PERSON',
+            'ORG': 'ORG',
+            'GPE': 'Location',
+            'LOC': 'Location'
+        }
+        
+        if entity_type in type_mapping:
+            # Get surrounding context
+            context_start = max(0, start_idx - context_size)
+            context_end = min(len(text), end_idx + context_size)
+            context = text[context_start:context_end]
             
-        tokens = tokenizer.convert_ids_to_tokens(inputs["input_ids"][0])
-        current_entity = []
-        current_type = None
-        current_start = None
-        
-        for idx, (token, pred) in enumerate(zip(tokens, predictions[0])):
-            if pred == 1:  # B-PER
-                if current_entity:
-                    entity_text = ' '.join(current_entity).strip()
-                    if current_type:
-                        entities[current_type].append({
-                            'text': entity_text,
-                            'context': chunk[max(0, current_start-100):min(len(chunk), current_start+len(entity_text)+100)]
-                        })
-                current_entity = [token.replace('##', '')]
-                current_type = 'PERSON'
-                current_start = idx
-            elif pred == 2:  # B-ORG
-                if current_entity:
-                    entity_text = ' '.join(current_entity).strip()
-                    if current_type:
-                        entities[current_type].append({
-                            'text': entity_text,
-                            'context': chunk[max(0, current_start-100):min(len(chunk), current_start+len(entity_text)+100)]
-                        })
-                current_entity = [token.replace('##', '')]
-                current_type = 'ORG'
-                current_start = idx
-            elif pred == 3:  # B-LOC
-                if current_entity:
-                    entity_text = ' '.join(current_entity).strip()
-                    if current_type:
-                        entities[current_type].append({
-                            'text': entity_text,
-                            'context': chunk[max(0, current_start-100):min(len(chunk), current_start+len(entity_text)+100)]
-                        })
-                current_entity = [token.replace('##', '')]
-                current_type = 'Location'
-                current_start = idx
-            elif pred in [4, 5, 6]:  # I-PER, I-ORG, I-LOC
-                if current_entity:
-                    current_entity.append(token.replace('##', ''))
-            else:  # O
-                if current_entity:
-                    entity_text = ' '.join(current_entity).strip()
-                    if current_type:
-                        entities[current_type].append({
-                            'text': entity_text,
-                            'context': chunk[max(0, current_start-100):min(len(chunk), current_start+len(entity_text)+100)]
-                        })
-                    current_entity = []
-                    current_type = None
-                    current_start = None
+            entities[type_mapping[entity_type]].append({
+                'text': entity_text,
+                'context': context
+            })
     
     return dict(entities)
 
 def process_articles():
     """Process articles in batches, extract entities, and link them to Wikidata"""
-    # Initialize GLINER model
-    print("Loading GLINER model...")
-    model_name = "EmergentMethods/gliner_medium_news-v2.1"
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModelForTokenClassification.from_pretrained(model_name)
-    
     # Initialize Entity Linker
     print("Initializing Entity Linker...")
     linker = EntityLinker()
@@ -121,7 +83,7 @@ def process_articles():
     for batch in tqdm(load_articles('dataset'), desc="Processing batches"):
         for article in batch:
             # Extract entities with context
-            raw_entities = extract_entities(article['content'], tokenizer, model)
+            raw_entities = extract_entities(article['content'])
             
             # Link entities to Wikidata
             linked_entities = defaultdict(list)
